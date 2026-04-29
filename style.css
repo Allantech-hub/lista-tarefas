@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* Glassmorphism Panel Base */
+    .glass-panel {
+        @apply bg-black/40 backdrop-blur-xl border border-glass-border shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+    }
+
+    /* Navigation Buttons */
+    .nav-btn {
+        @apply px-4 py-2 rounded-xl text-sm font-medium text-gray-400 transition-all hover:text-white hover:bg-white/5;
+    }
+    .nav-btn.active {
+        @apply text-white bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)];
+    }
+
+    /* Filter Buttons */
+    .filter-btn {
+        @apply flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 transition-all hover:text-white whitespace-nowrap;
+    }
+    .filter-btn.active {
+        @apply text-white bg-glass-200 border border-glass-border shadow-[0_0_15px_rgba(255,255,255,0.05)];
+    }
+
+    /* Custom Checkbox */
+    .task-checkbox {
+        @apply w-7 h-7 rounded-lg border-2 border-gray-600 flex items-center justify-center cursor-pointer transition-all bg-black/50 hover:border-neon-blue hover:shadow-[0_0_10px_rgba(0,240,255,0.3)];
+    }
+    .task-checkbox.checked {
+        @apply border-neon-blue bg-neon-blue/20 shadow-[0_0_15px_rgba(0,240,255,0.2)];
+    }
+    .task-checkbox.checked::after {
+        content: '✓';
+        @apply text-neon-blue font-bold text-lg;
+    }
+}
+
+#quote-text {
+    transition: opacity 0.3s ease;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-down {
+    animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-right {
+    animation: slideRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
+/* Custom Scrollbar for a cleaner look */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Hide scrollbar completely but allow scroll */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Task Item Hover Effects */
+.task-item {
+    transition: all 0.3s ease;
+}
+.task-item:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(4px);
+}
+.task-item.completed {
+    opacity: 0.5;
+}
+.task-item.completed:hover {
+    opacity: 0.8;
+}
+
+/* AI Agent Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+    50% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.7); }
+}
+
+#ai-agent-card i {
+    animation: float 3s ease-in-out infinite;
+}
+

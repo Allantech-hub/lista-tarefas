@@ -1,0 +1,5 @@
+// Exemplo de configuração - PREENCHA COM SEUS DADOS E RENOMEIE PARA config.js
+const CONFIG = {
+    SUPABASE_URL: 'SUA_URL_DO_SUPABASE_AQUI',
+    SUPABASE_KEY: 'SUA_ANON_KEY_AQUI'
+};

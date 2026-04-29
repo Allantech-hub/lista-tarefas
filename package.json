@@ -1,0 +1,16 @@
+{
+  "name": "lista-tarefas-jarvis",
+  "version": "2.0.0",
+  "description": "Gerenciador de tarefas moderno com integração JARVIS (Microsoft AI Foundry) e Supabase.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Allantech-hub",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
