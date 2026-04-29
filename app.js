@@ -466,16 +466,28 @@ async function handleJarvisChat() {
     let response = "";
 
     try {
-        // Tentativa de chamar a Edge Function (Foundry Agent)
         const { data, error } = await supabaseClient.functions.invoke('jarvis-agent', {
             body: { query: query, tasks: tasks }
         });
 
-        if (error || !data.response) throw new Error("Fallback para sistema local");
-        response = data.response;
+        if (error || !data.response) throw new Error("Fallback local");
+        
+        let fullText = data.response;
+        
+        // Action Parser: [ACTION:TYPE:DATA]
+        const actionMatch = fullText.match(/\[ACTION:(.*?):(.*?)\]/);
+        if (actionMatch) {
+            const type = actionMatch[1];
+            const val = actionMatch[2];
+            executeJarvisAction(type, val);
+            // Limpa a tag do texto exibido
+            response = fullText.replace(/\[ACTION:.*?\]/, "").trim();
+        } else {
+            response = fullText;
+        }
 
     } catch (err) {
-        // Fallback para a lógica local se a função falhar ou não estiver implantada
+        // Fallback (Mantido para offline)
         const pending = tasks.filter(t => !t.completed);
         const high = pending.filter(t => t.priority === 'Alta').length;
         const randomTask = pending.length > 0 ? pending[Math.floor(Math.random() * pending.length)].title : "descansar";
@@ -484,10 +496,6 @@ async function handleJarvisChat() {
             response = jarvisResponses.greetings[Math.floor(Math.random() * jarvisResponses.greetings.length)];
         } else if (query.includes('tarefa') || query.includes('dia') || query.includes('hoje')) {
             response = jarvisResponses.status[Math.floor(Math.random() * jarvisResponses.status.length)].replace('{n}', pending.length);
-        } else if (query.includes('obrigado') || query.includes('vlw') || query.includes('bom')) {
-            response = jarvisResponses.praise[Math.floor(Math.random() * jarvisResponses.praise.length)];
-        } else if (query.includes('prioridade') || query.includes('urgente') || query.includes('critico')) {
-            response = jarvisResponses.urgent[Math.floor(Math.random() * jarvisResponses.urgent.length)].replace('{n}', high);
         } else {
             response = jarvisResponses.unknown[Math.floor(Math.random() * jarvisResponses.unknown.length)].replace('{task}', randomTask);
         }
@@ -497,6 +505,53 @@ async function handleJarvisChat() {
         typeWriterEffect(display, response);
         speakJARVIS(response);
     }, 400);
+}
+
+function executeJarvisAction(type, val) {
+    console.log(`JARVIS executando ação: ${type} com dado: ${val}`);
+    
+    switch(type) {
+        case 'ADD':
+            addTask(val, 'Trabalho', 'Média', new Date().toISOString().split('T')[0]);
+            break;
+        case 'DELETE':
+            // Procura por título aproximado se for string
+            const taskToDelete = tasks.find(t => t.title.toLowerCase().includes(val.toLowerCase()));
+            if (taskToDelete) deleteTask(taskToDelete.id);
+            break;
+        case 'COMPLETE':
+            const taskToToggle = tasks.find(t => t.title.toLowerCase().includes(val.toLowerCase()));
+            if (taskToToggle) toggleTask(taskToToggle.id, !taskToToggle.completed);
+            break;
+        case 'FILTER':
+            handleFilterChange({ target: { dataset: { filter: val.toLowerCase() }, classList: { add: ()=>{}, remove: ()=>{} } } });
+            break;
+    }
+}
+
+// Função auxiliar para o JARVIS adicionar tarefas
+async function addTask(title, category, priority, date) {
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const { data, error } = await supabaseClient
+            .from('tasks')
+            .insert([{ 
+                title, 
+                category, 
+                priority, 
+                date, 
+                completed: false,
+                user_id: user?.id 
+            }])
+            .select();
+
+        if (error) throw error;
+        await fetchTasks();
+        renderTasks();
+        renderCalendar();
+    } catch (err) {
+        console.error("Erro ao adicionar tarefa via JARVIS:", err);
+    }
 }
 
 // Allow Enter key in chat
